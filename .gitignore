@@ -92,3 +92,9 @@ getversion.mak
 configure.out
 */Platforms/iOS/pjsua2/*
 */Platforms/iOS/lib/*
+
+# Zed editor stuff
+.zed
+
+# LSP server stuff
+.clangd
