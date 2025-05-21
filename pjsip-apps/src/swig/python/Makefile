@@ -1,6 +1,7 @@
 PYTHON_SO=_pjsua2.so
 
 USE_PYTHON3?=1
+USE_SWIG_PREGEN?=0
 
 ifeq ($(USE_PYTHON3),1)
   PYTHON_EXE=python3
@@ -46,8 +47,31 @@ gcc.exe: cc_mingw.c
 	gcc -o gcc.exe cc_mingw.c
 	cp gcc.exe g++.exe
 
+
+ifeq ($(USE_SWIG_PREGEN),1)
+
+# useful for projects that vendor pjsip and want to allow
+# building the whole project without swig; these projects
+# can pregenerate the swig output and include it along
+# with their vendored copy of pjsip
+
+pjsua2_wrap.cpp: use_pregen
+pjsua2_wrap.h: use_pregen
+pjsua2.py: use_pregen
+
+use_pregen:
+	@test -n "${SWIG_PREGEN_DIR}" || (echo "ERROR: SWIG_PREGEN_DIR is not defined" && exit 1)
+	@test -d "${SWIG_PREGEN_DIR}" || (echo "ERROR: SWIG_PREGEN_DIR does not point to a directory (${SWIG_PREGEN_DIR})" && exit 1)
+	cp ${SWIG_PREGEN_DIR}/pjsua2_wrap.cpp pjsua2_wrap.cpp
+	cp ${SWIG_PREGEN_DIR}/pjsua2_wrap.h pjsua2_wrap.h
+	cp ${SWIG_PREGEN_DIR}/pjsua2.py pjsua2.py
+
+else
+
 pjsua2_wrap.cpp: ../pjsua2.i ../symbols.i Makefile $(SRCS)
 	swig $(SWIG_FLAGS) -python -o pjsua2_wrap.cpp ../pjsua2.i
+
+endif
 
 clean distclean realclean:
 	rm -rf $(PYTHON_SO) pjsua2_wrap.cpp pjsua2_wrap.h pjsua2.py build *.pyc
