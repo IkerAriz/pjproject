@@ -87,3 +87,9 @@ tests/fuzz/*.o
 cov-int/
 getversion.mak
 configure.out
+
+# Zed editor stuff
+.zed
+
+# LSP server stuff
+.clangd
